@@ -11,8 +11,21 @@ pipeline {
         stage('Pre Build') {
             steps {
                 script {
+                    sh 'npm install'
+                }
+            }
+        }
+         stage('Sonar Scan') {
+            steps {
+                tool name: 'SonarScaner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+            }
+        }
+        stage('Replace Env Values') {
+            steps {
+                script{
                     sh '''
-                        npm install
+                        cd ~/home/ubuntu/scripts/
+                        ./ReplaseValues.sh ~/home/ubuntu/jenkins-agent/pipeline-sample/demo-app/src/environments/environment.ts
                     '''
                 }
             }
@@ -20,17 +33,17 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh '''
-                    npm test
-                '''
+                script {
+                    sh 'npm run test'
+                }
             }
         }
 
         stage('Build') {
             steps {
-                sh '''
-                    npm run build
-                '''
+                script {
+                    sh 'npm run build'
+                }
             }
         }
     }
