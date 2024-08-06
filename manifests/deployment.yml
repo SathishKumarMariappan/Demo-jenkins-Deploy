@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: sathishkumarmariappandemojenkinsdeploy 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sathishkumarmariappandemojenkinsdeploy
+  template:
+    metadata:
+      labels:
+        app: sathishkumarmariappandemojenkinsdeploy 
+    spec:
+      containers:
+        - name: sathishkumarmariappandemojenkinsdeploy 
+          image: demoimage.azurecr.io/sathishkumarmariappandemojenkinsdeploy
+          ports:
+          - containerPort: 80
