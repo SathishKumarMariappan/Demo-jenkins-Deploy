@@ -12,8 +12,8 @@ RUN npm install
 RUN npm run build
 
 # Stage 5 : Deploy/Host
-# FROM nginx:alpine
-# COPY --from=node /Demo-jenkins-Deploy/dist/demo-app/browser /usr/share/nginx/html
+FROM nginx:alpine
+COPY --from=node /Demo-jenkins-Deploy/dist/demo-app/browser /usr/share/nginx/html
 
 
 
