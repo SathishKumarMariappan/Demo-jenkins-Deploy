@@ -13,7 +13,8 @@ RUN npm install
 # pip install 
 # dotnet restore nuget 
 
-# Stage 4 : Build 
+# Stage 4 : Test/Build 
+RUN npm run test
 RUN npm run build
 # python <filename>
 # dotnet run 
