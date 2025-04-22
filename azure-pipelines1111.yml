@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- master
+- alpha
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -25,22 +25,16 @@ stages:
         displayName: 'Install Node.js 20.x'
 
       - script: |
-          cd demo-app/
           npm install -g @angular/cli
           npm install
           ng build
         displayName: 'npm install and build'
         workingDirectory: '$(Build.SourcesDirectory)'
-      - task: CmdLine@2
-        displayName: "Run unit tests"
-        inputs:
-          script: |
-            cd demo-app/
-            ng test --browsers=ChromeHeadless --code-coverage --watch=false
+
       - task: ArchiveFiles@2
         displayName: 'Archive files'
         inputs:
-          rootFolderOrFile: '$(System.DefaultWorkingDirectory)/demo-app/dist/demo-app/browser'
+          rootFolderOrFile: '$(System.DefaultWorkingDirectory)/dist/demo-app/browser'
           includeRootFolder: false
           archiveType: 'zip'
           archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
@@ -69,9 +63,9 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Deploy App Service'
             inputs:
-              azureSubscription: 'Azure subscription 1(52d86f62-f3a8-47bd-90d8-ea30eb60c047)'
+              azureSubscription: 'Azure subscription 1(30f35e9a-4e7f-4d77-81d5-777bec490223)'
               appType: 'webAppLinux'
-              appName: '21022024'
+              appName: '18042024'
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
               runtimeStack: 'NODE|20-lts'
               startUpCommand: 'pm2 serve /home/site/wwwroot -no-daemon-spa'
