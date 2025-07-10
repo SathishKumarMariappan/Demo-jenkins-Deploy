@@ -15,6 +15,14 @@ pipeline {
                 }
             }
         }
+      stage('Terraform') {
+            steps {
+                script {
+                    sh '''terraform init
+                          terraform apply --auto-approve'''
+                }
+            }
+        }
          stage('Sonar Scan') {
             steps {
                 tool name: 'SonarScaner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
