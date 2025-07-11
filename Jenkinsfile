@@ -10,7 +10,6 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 sh '''
-                    cd terraform
                     terraform init
                 '''
             }
@@ -18,7 +17,6 @@ pipeline {
         stage('Terraform Validate') {
             steps {
                 sh '''
-                    cd terraform
                     terraform validate
                 '''
             }
@@ -32,7 +30,6 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 sh '''
-                    cd terraform
                     terraform plan
                 '''
             }
@@ -40,7 +37,6 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 sh '''
-                    cd terraform
                     terraform apply -auto-approve
                 '''
             }
@@ -48,7 +44,6 @@ pipeline {
         stage('Terraform Destroy (Cleanup)') {
             steps {
                 sh '''
-                    cd terraform
                     terraform destroy -auto-approve
                 '''
             }
