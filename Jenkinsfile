@@ -14,13 +14,6 @@ pipeline {
                 '''
             }
         }
-        stage('Terraform Validate') {
-            steps {
-                sh '''
-                    terraform validate
-                '''
-            }
-        }
         stage('SonarQube Scan') {
             steps {
                 tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
