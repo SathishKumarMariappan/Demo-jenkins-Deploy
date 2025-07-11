@@ -2,67 +2,55 @@ pipeline {
     agent any
 
     stages {
-        stage('Git Clone') {
+        stage('Check Azure CLI Version') {
             steps {
-                git branch: 'main', credentialsId: '540aa869-c6f6-4365-9aa7-a5272818e765', url: 'https://github.com/SathishKumarMariappan/Demo-jenkins-Deploy.git'
+                sh 'az --version'
             }
         }
-
-        stage('Pre Build') {
+        stage('Terraform Init') {
             steps {
-                script {
-                    sh '''
-                        # Download and install nvm
-                        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-                        export NVM_DIR="$HOME/.nvm"
-                        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-                        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-                        nvm install 22
-                        nvm use 22
-                        node -v
-                        npm -v 
-                        npm install
-                    '''
-                }
+                sh '''
+                    cd terraform
+                    terraform init
+                '''
             }
         }
-      stage('Terraform') {
+        stage('Terraform Validate') {
             steps {
-                script {
-                    sh '''terraform init
-                          terraform apply --auto-approve'''
-                }
+                sh '''
+                    cd terraform
+                    terraform validate
+                '''
             }
         }
-         stage('Sonar Scan') {
+        stage('SonarQube Scan') {
             steps {
-                tool name: 'SonarScaner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                sh 'sonar-scanner'
             }
         }
-        stage('Replace Env Values') {
+        stage('Terraform Plan') {
             steps {
-                script{
-                    sh '''
-                        cd ~/home/ubuntu/scripts/
-                        ./ReplaseValues.sh ~/home/ubuntu/jenkins-agent/pipeline-sample/demo-app/src/environments/environment.ts
-                    '''
-                }
+                sh '''
+                    cd terraform
+                    terraform plan
+                '''
             }
         }
-
-        stage('Test') {
+        stage('Terraform Apply') {
             steps {
-                script {
-                    sh 'npm run test'
-                }
+                sh '''
+                    cd terraform
+                    terraform apply -auto-approve
+                '''
             }
         }
-
-        stage('Build') {
+        stage('Terraform Destroy (Cleanup)') {
             steps {
-                script {
-                    sh 'npm run build'
-                }
+                sh '''
+                    cd terraform
+                    terraform destroy -auto-approve
+                '''
             }
         }
     }
