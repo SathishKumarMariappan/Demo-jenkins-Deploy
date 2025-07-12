@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-deploy
+  labels:
+    app: demo
+spec:
+  replicas: 2
+  selector:
+    matchLables:
+      app: demo
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      containers:
+      - name: hello-continer
+        image: demo03052024.azurecr.io/demo03052024/samples/hello
+        ports:
+        - containerPort: 80

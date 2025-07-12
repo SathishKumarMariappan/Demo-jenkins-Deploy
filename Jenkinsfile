@@ -1,49 +1,44 @@
 pipeline {
-    agent {label 'agent-1'}
+    agent any
 
     stages {
-        stage('Git Clone') {
+        stage('Check Azure CLI Version') {
             steps {
-                git branch: 'develop', changelog: false, credentialsId: 'b553c60a-a915-4f89-8b2b-f962a6bb1140', poll: false, url: 'https://github.com/SathishKumarMariappan/Demo-jenkins-Deploy.git'
+                sh 'az --version'
             }
         }
-
-        stage('Pre Build') {
+        stage('Terraform Init') {
             steps {
-                script {
-                    sh 'npm install'
-                }
+                sh '''
+                    terraform init
+                '''
             }
         }
-         stage('Sonar Scan') {
+        stage('SonarQube Scan') {
             steps {
-                tool name: 'SonarScaner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                sh 'sonar-scanner'
             }
         }
-        stage('Replace Env Values') {
+        stage('Terraform Plan') {
             steps {
-                script{
-                    sh '''
-                        cd ~/home/ubuntu/scripts/
-                        ./ReplaseValues.sh ~/home/ubuntu/jenkins-agent/pipeline-sample/demo-app/src/environments/environment.ts
-                    '''
-                }
+                sh '''
+                    terraform plan
+                '''
             }
         }
-
-        stage('Test') {
+        stage('Terraform Apply') {
             steps {
-                script {
-                    sh 'npm run test'
-                }
+                sh '''
+                    terraform apply -auto-approve
+                '''
             }
         }
-
-        stage('Build') {
+        stage('Terraform Destroy (Cleanup)') {
             steps {
-                script {
-                    sh 'npm run build'
-                }
+                sh '''
+                    terraform destroy -auto-approve
+                '''
             }
         }
     }
